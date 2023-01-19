@@ -71,7 +71,51 @@ std::vector<std::vector<float>> draw_full_triangle(std::vector<std::vector<int> 
     }
     return z_buffer;
 }
-void draw_triangles(std::vector<std::vector<int> > faces, std::vector<std::vector<int> > vertices, std::vector<std::vector<int> > vertices_texture, TGAImage &img, TGAColor color, int width, int height){
+
+std::vector<std::vector<float>> draw_full_triangle_with_texture(std::vector<std::vector<int> > vertices,std::vector<std::vector<int> > vertices_t, TGAImage &img,TGAImage &texture, std::vector<std::vector<float>> z_buffer ){
+    std::vector<int> A = vertices[0];
+    std::vector<int> B = vertices[1];
+    std::vector<int> C = vertices[2];
+    std::vector<int> At = vertices_t[0];
+    std::vector<int> Bt = vertices_t[1];
+    std::vector<int> Ct = vertices_t[2];
+    int xmax = std::max(std::max(vertices[0][0],vertices[1][0]),vertices[2][0]);
+    int ymax = std::max(std::max(vertices[0][1],vertices[1][1]),vertices[2][1]);
+    int xmin = std::min(std::min(vertices[0][0],vertices[1][0]),vertices[2][0]);
+    int ymin = std::min(std::min(vertices[0][1],vertices[1][1]),vertices[2][1]);
+    std::vector<float> normal_v = normal_vect(A,B,C);
+    float normal = normal_v[0] * 0 + normal_v[1] * 0 + normal_v[2] * 1;
+    if(normal > 0)
+    {
+        TGAColor color = TGAColor(normal*255,normal*255,normal*255,normal*255);
+        for(int x = xmin; x <= xmax; x++)
+        {
+            for(int y=ymin; y <=ymax; y++)
+            {
+                std::vector<float> baricentric_coord =  baricentric(A,B,C,x,y);
+                float z= 0;
+                float t_x =0;
+                float t_y = 0;
+                for (int v : {0,1,2}) {
+                    z += baricentric_coord[v]*vertices[v][2];
+                    t_x += baricentric_coord[v]*vertices_t[v][0];
+                    t_y += baricentric_coord[v]*vertices_t[v][1];
+                }
+                int tx = int(t_x);
+                int ty = int(t_y);
+                if (baricentric_coord[0] >= 0 && baricentric_coord[1] >= 0 && baricentric_coord[2] >= 0 )
+                {
+                    if(z_buffer[x][y] < z){
+                        z_buffer[x][y]  = z;
+                        img.set(x,y,texture.get(tx,ty));
+                    }
+                }
+            }
+        }
+    }
+    return z_buffer;
+}
+void draw_triangles(std::vector<std::vector<int> > faces, std::vector<std::vector<int> > vertices,std::vector<std::vector<int> > t_faces, std::vector<std::vector<int> > vertices_texture, TGAImage &img, TGAImage &texture, TGAColor color, int width, int height){
     std::vector<std::vector<float>> z_buffer(width, std::vector<float>(height));
 
     for(int i = 0; i < width; i++){
@@ -81,6 +125,7 @@ void draw_triangles(std::vector<std::vector<int> > faces, std::vector<std::vecto
     }
     for (int i = 0; i < faces.size(); i++)
     {
-        z_buffer = draw_full_triangle({vertices[faces[i][0]],vertices[faces[i][1]],vertices[faces[i][2]]},  img, z_buffer);
+        z_buffer = draw_full_triangle_with_texture({vertices[faces[i][0]],vertices[faces[i][1]],vertices[faces[i][2]]},
+        {vertices_texture[t_faces[i][0]],vertices_texture[t_faces[i][1]],vertices_texture[t_faces[i][2]]},  img, texture, z_buffer);
     }
 }
