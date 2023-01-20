@@ -16,3 +16,22 @@ std::vector<float> normal_vect(std::vector<int> A, std::vector<int> B, std::vect
     std::vector<float> vect = { x/std::sqrt(x*x + y*y + z*z),y/std::sqrt(x*x + y*y + z*z), z/std::sqrt(x*x + y*y + z*z) };
     return vect ;
 }
+
+std::vector<std::vector<float>> matices_multiplication (std::vector<std::vector<float>> mult, std::vector<std::vector<float>> list_of_coords){
+    int mat_size = mult.size();
+    int list_size = list_of_coords[0].size();
+    std::vector<std::vector<float>> list_coords_process;
+    for (int ligne = 0; ligne < mat_size;ligne++){
+        std::vector<float> v ;
+        for (int coords_indice = 0; coords_indice < list_size;coords_indice++){
+            float temp = 0;
+            for (int col = 0; col < mat_size;col++){
+            temp += mult[ligne][col] * list_of_coords[col][coords_indice] ;
+            }
+            v.push_back(temp);
+        }
+        list_coords_process.push_back(v);
+    }
+    return list_coords_process;
+
+}

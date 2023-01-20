@@ -71,5 +71,6 @@ int main(int argc, char** argv) {
     draw_triangles(faces,vertices, t_faces, vertices_texture, framebuffer, texture, red, width, height);
     //framebuffer.set(10,10, red);
     framebuffer.write_tga_file("output.tga");
+    matices_multiplication( {{1.5,0},{0,1.5}}  , { {1,1,1,0,-1},{-1,-1,0,1,1} });
     return 0;
 }
