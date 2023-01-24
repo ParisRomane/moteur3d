@@ -11,18 +11,19 @@ const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
 
 
-
-int main(int argc, char** argv) {
+//int argc, char** argv
+int main() {
     // dimensions
     constexpr int width = 512 ;
     constexpr int height = 512 ;
     constexpr int t_width = 1023;
     constexpr int t_height = 1023;
     //file to process
-    std::ifstream file("tinyrenderer/obj/diablo3_pose/diablo3_pose.obj");
+    std::ifstream file("tinyrenderer/obj/african_head/african_head.obj");
     std::string myText; 
-    std::vector<std::vector<int> > vertices;
+    std::vector<std::vector<float> > vertices;
     std::vector<std::vector<int> > vertices_texture;
+    std::vector<std::vector<float> > vertice_normals;
     std::vector<std::vector<int> > faces;
     std::vector<std::vector<int> > t_faces;
     std::string type;
@@ -31,7 +32,7 @@ int main(int argc, char** argv) {
         if( type == "v"){
             float x, y, z;
             file >> x >> y >> z ;
-            std::vector<int> v = {std::round((x*width/2)+width/2),std::round((y*height/2)+height/2),std::round((z*height/2)+height/2)};
+            std::vector<float> v = {x,y,z};
             vertices.push_back(v);
         }
                 
@@ -41,7 +42,12 @@ int main(int argc, char** argv) {
             std::vector<int> v = {std::round(x*t_width),std::round(y*t_height),std::round(z*t_height)};
             vertices_texture.push_back(v);
         }
-        
+        if( type == "vn"){
+            float x, y, z;
+            file >> x >> y >> z ;
+            std::vector<float> v = {x,y,z};
+            vertice_normals.push_back(v);
+        }
         if( type == "f"){   
             int x, y, z, tx ,ty, tz;
             std::string coord;
@@ -64,13 +70,20 @@ int main(int argc, char** argv) {
         } 
     }
     file.close();
+    //END file process
+
+    // Compute perspective
+    std::vector<float> cam_vector = {0,0,2};
+    std::vector<std::vector<float> > computed_vertices = compute_perspective(vertices,cam_vector);
+    std::vector<std::vector<int>> new_vertices =resize(computed_vertices, width, height);
+    cam_vector = {0,0,1.};
+    // creating the image
     TGAImage framebuffer(width, height, TGAImage::RGB);
     TGAImage texture(1,1,TGAImage::RGB);
-    texture.read_tga_file("tinyrenderer/obj/diablo3_pose/diablo3_pose_diffuse.tga");
+    texture.read_tga_file("tinyrenderer/obj/african_head/african_head_diffuse.tga");
     texture.flip_vertically();
-    draw_triangles(faces,vertices, t_faces, vertices_texture, framebuffer, texture, red, width, height);
+    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, red, width, height, cam_vector);
     //framebuffer.set(10,10, red);
     framebuffer.write_tga_file("output.tga");
-    matices_multiplication( {{1.5,0},{0,1.5}}  , { {1,1,1,0,-1},{-1,-1,0,1,1} });
     return 0;
 }
