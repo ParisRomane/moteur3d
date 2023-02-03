@@ -7,7 +7,6 @@ vec3 cross(const vec3 &v1, const vec3 &v2) {
     return vec<3>{v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x};
 }
 
-
 vec3 baricentric(vec3 A, vec3 B,vec3 C, int x, int y){
     float aire_ABC = (B[0] - A[0])*(C[1] - A[1]) -  (C[0] - A[0])*(B[1] - A[1]);
     float aire_APC = (x - A[0])*(C[1] - A[1]) -  (C[0] - A[0])*(y - A[1]);
@@ -61,23 +60,9 @@ void dist(std::vector<vec3> mat, std::vector<vec3> mat2){
     std::cout<< err <<" \n";
 }
 std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 cam_vector){
-    /*//creation du vecteur "caméra projection"
-    std::vector<vec3> proj = { {1,0,0,0},{0,1,0,0}, {0,0,1,0}};
-    vec3 v;
-    for (int ind = 0; ind < cam_vector.size();ind++){
-        if (cam_vector[ind] != 0){
-            v.push_back(-1.0/cam_vector[ind]);
-        }else{v.push_back(0);}
-    }
-    v.push_back(1);
-    proj.push_back(v);
-    std::vector<vec3> new_vertices = vertices;
-    // il faut mettre la 4ème dimention de vertices avec 1 partout.
-    for (int ind = 0; ind < vertices.size();ind++){
-        new_vertices[ind].push_back(1);
-    }
-    new_vertices = transpose(new_vertices);
-    */
+
+    //TO BE :
+    //std::vector<vec3> new_vertices =  Vec3f(ViewPort*Projection*ModelView*Matrix(v)); <- v in vertices
     std::vector<vec3> new_vertices = retro_projection(cam_vector[2],vertices);
     return new_vertices;
 }

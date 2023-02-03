@@ -42,9 +42,6 @@ int width, int height ){
     vec3 A = vertices[0];
     vec3 B = vertices[1];
     vec3 C = vertices[2];
-    vec3 At = vertices_t[0];
-    vec3 Bt = vertices_t[1];
-    vec3 Ct = vertices_t[2];
     int xmax = std::max(std::max(vertices[0][0],vertices[1][0]),vertices[2][0]);
     int ymax = std::max(std::max(vertices[0][1],vertices[1][1]),vertices[2][1]);
     int xmin = std::min(std::min(vertices[0][0],vertices[1][0]),vertices[2][0]);
@@ -72,13 +69,12 @@ int width, int height ){
             {
                 if(z_buffer[x][y] < z){
                     z_buffer[x][y]  = z;
-                    //TGAColor color = TGAColor(std::max(int(texture.get(tx,ty)[2] *normal), 0),
-                    //std::max(int(texture.get(tx,ty)[1] *normal),0),
-                    //std::max(int(texture.get(tx,ty)[0]*normal),0));
+                    TGAColor color = TGAColor(std::max(int(texture.get(tx,ty)[2] *normal), 0),
+                    std::max(int(texture.get(tx,ty)[1] *normal),0),
+                    std::max(int(texture.get(tx,ty)[0]*normal),0));
+                    img.set(x,y,texture.get(tx,ty));
 
-                    TGAColor color = TGAColor(int(200*normal),int(200*normal),int(200*normal));
-                    //img.set(x,y,texture.get(tx,ty));
-                    
+                    //TGAColor color = TGAColor(int(200*normal),int(200*normal),int(200*normal));
                     img.set(x,y,color);
                 }
             }

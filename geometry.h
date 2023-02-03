@@ -115,11 +115,6 @@ template<int nrows,int ncols> struct mat {
             for (int j=ncols;j--; ret[i][j]=(i==j));
         return ret;
     }
-
-    double det() const {
-        return dt<ncols>::det(*this);
-    }
-
     mat<ncols,nrows> transpose() const {
         mat<ncols,nrows> ret;
         for (int i=ncols; i--; ret[i]=this->col(i));
@@ -127,63 +122,6 @@ template<int nrows,int ncols> struct mat {
     }
 };
 
-template<int nrows,int ncols> vec<nrows> operator*(const mat<nrows,ncols>& lhs, const vec<ncols>& rhs) {
-    vec<nrows> ret;
-    for (int i=nrows; i--; ret[i]=lhs[i]*rhs);
-    return ret;
-}
-
-template<int R1,int C1,int C2>mat<R1,C2> operator*(const mat<R1,C1>& lhs, const mat<C1,C2>& rhs) {
-    mat<R1,C2> result;
-    for (int i=R1; i--; )
-        for (int j=C2; j--; result[i][j]=lhs[i]*rhs.col(j));
-    return result;
-}
-
-template<int nrows,int ncols>mat<nrows,ncols> operator*(const mat<nrows,ncols>& lhs, const double& val) {
-    mat<nrows,ncols> result;
-    for (int i=nrows; i--; result[i] = lhs[i]*val);
-    return result;
-}
-
-template<int nrows,int ncols>mat<nrows,ncols> operator/(const mat<nrows,ncols>& lhs, const double& val) {
-    mat<nrows,ncols> result;
-    for (int i=nrows; i--; result[i] = lhs[i]/val);
-    return result;
-}
-
-template<int nrows,int ncols>mat<nrows,ncols> operator+(const mat<nrows,ncols>& lhs, const mat<nrows,ncols>& rhs) {
-    mat<nrows,ncols> result;
-    for (int i=nrows; i--; )
-        for (int j=ncols; j--; result[i][j]=lhs[i][j]+rhs[i][j]);
-    return result;
-}
-
-template<int nrows,int ncols>mat<nrows,ncols> operator-(const mat<nrows,ncols>& lhs, const mat<nrows,ncols>& rhs) {
-    mat<nrows,ncols> result;
-    for (int i=nrows; i--; )
-        for (int j=ncols; j--; result[i][j]=lhs[i][j]-rhs[i][j]);
-    return result;
-}
-
-template<int nrows,int ncols> std::ostream& operator<<(std::ostream& out, const mat<nrows,ncols>& m) {
-    for (int i=0; i<nrows; i++) out << m[i] << std::endl;
-    return out;
-}
-
-template<int n> struct dt {
-    static double det(const mat<n,n>& src) {
-        double ret = 0;
-        for (int i=n; i--; ret += src[0][i]*src.cofactor(0,i));
-        return ret;
-    }
-};
-
-template<> struct dt<1> {
-    static double det(const mat<1,1>& src) {
-        return src[0][0];
-    }
-};
 
 vec3 baricentric(vec3 A, vec3 B,vec3 C, int x, int y);
 

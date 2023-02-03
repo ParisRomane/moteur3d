@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     }else {
         std::cout << " le nombre d'arguments rentrée est insufisant : " << argc<<"\n Arguments par défaut pris. \n";
     }
-    //file to process
+    //FILE PROSSESSING
     std::ifstream file(path_struct);
     std::string myText; 
     std::vector<vec3 > vertices;
@@ -87,13 +87,13 @@ int main(int argc, char** argv) {
         } 
     }
     file.close();
-    //END file process
+    //END FILE PROSSESSING
 
     // Compute perspective
     vec3 cam_vector = {0,2,2};
     std::vector<vec3 > computed_vertices = compute_perspective(vertices,cam_vector);
     std::vector<vec3> new_vertices =resize(computed_vertices, width, height);
-    vec3 light_vector = {0,0,1};
+    vec3 light_vector = {1,-1,1}; light_vector = light_vector.normalized();
     //load texture.
     TGAImage texture(1,1,TGAImage::RGB);
     texture.read_tga_file(path_texture);
