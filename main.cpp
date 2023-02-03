@@ -39,31 +39,31 @@ int main(int argc, char** argv) {
     //file to process
     std::ifstream file(path_struct);
     std::string myText; 
-    std::vector<std::vector<float> > vertices;
-    std::vector<std::vector<int> > vertices_texture;
-    std::vector<std::vector<float> > vertice_normals;
-    std::vector<std::vector<int> > faces;
-    std::vector<std::vector<int> > t_faces;
+    std::vector<vec3 > vertices;
+    std::vector<vec3 > vertices_texture;
+    std::vector<vec3 > vertice_normals;
+    std::vector<vec3> faces;
+    std::vector<vec3> t_faces;
     std::string type;
     while ( file >> type ){
 
         if( type == "v"){
             float x, y, z;
             file >> x >> y >> z ;
-            std::vector<float> v = {x,y,z};
+            vec3 v = {x,y,z};
             vertices.push_back(v);
         }
                 
         if( type == "vt"){
             float x, y, z;
             file >> x >> y >> z ;
-            std::vector<int> v = {std::round(x*t_width),std::round(y*t_height),std::round(z*t_height)};
+            vec3 v = {std::round(x*t_width),std::round(y*t_height),std::round(z*t_height)};
             vertices_texture.push_back(v);
         }
         if( type == "vn"){
             float x, y, z;
             file >> x >> y >> z ;
-            std::vector<float> v = {x,y,z};
+            vec3 v = {x,y,z};
             vertice_normals.push_back(v);
         }
         if( type == "f"){   
@@ -81,9 +81,9 @@ int main(int argc, char** argv) {
             z = std::stoi(coord.substr(0,coord.find("/")));
             coord = coord.substr(coord.find("/")+1,coord.length());
             tz = std::stoi(coord.substr(0,coord.find("/")));
-            std::vector<int> v = {x-1,y-1,z-1};
+            vec3 v = {x-1,y-1,z-1};
             faces.push_back(v);
-            std::vector<int> tv = {tx-1,ty-1,tz-1};
+            vec3 tv = {tx-1,ty-1,tz-1};
             t_faces.push_back(tv);
         } 
     }
@@ -91,10 +91,10 @@ int main(int argc, char** argv) {
     //END file process
 
     // Compute perspective
-    std::vector<float> cam_vector = {0,2,2};
-    std::vector<std::vector<float> > computed_vertices = compute_perspective(vertices,cam_vector);
-    std::vector<std::vector<int>> new_vertices =resize(computed_vertices, width, height);
-    std::vector<float> light_vector = {0,0,1};
+    vec3 cam_vector = {0,2,2};
+    std::vector<vec3 > computed_vertices = compute_perspective(vertices,cam_vector);
+    std::vector<vec3> new_vertices =resize(computed_vertices, width, height);
+    vec3 light_vector = {0,0,1};
     //load texture.
     TGAImage texture(1,1,TGAImage::RGB);
     texture.read_tga_file(path_texture);

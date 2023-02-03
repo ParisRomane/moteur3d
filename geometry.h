@@ -211,16 +211,16 @@ template<> struct dt<1> {
     }
 };
 
-std::vector<float> baricentric(std::vector<int> A, std::vector<int> B,std::vector<int> C, int x, int y);
+vec3 baricentric(vec3 A, vec3 B,vec3 C, int x, int y);
 
-std::vector<float> normal_vect(std::vector<int> A, std::vector<int> B, std::vector<int> C);
+vec3 normal_vect(vec3 A, vec3 B, vec3 C);
 
-std::vector<std::vector<float>> matices_multiplication (std::vector<std::vector<float>> mult, std::vector<std::vector<float>> list_of_coords);
+std::vector<vec3> matices_multiplication (std::vector<vec3> mult, std::vector<vec3> list_of_coords);
 
-std::vector<std::vector<float>> retro_projection(float c,std::vector<std::vector<float>> list_of_coords);
+std::vector<vec3> retro_projection(float c,std::vector<vec3> list_of_coords);
 
-std::vector<std::vector<float>> transpose(std::vector<std::vector<float>> mat);
+std::vector<vec3> transpose(std::vector<vec3> mat);
 
-void dist(std::vector<std::vector<float>> mat, std::vector<std::vector<float>> mat2);
+void dist(std::vector<vec3> mat, std::vector<vec3> mat2);
 
-std::vector<std::vector<float>> compute_perspective( std::vector<std::vector<float>>vertices, std::vector<float> cam_vector);
+std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 cam_vector);

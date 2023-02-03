@@ -36,15 +36,15 @@ void line(int x0, int y0, int x1, int y1, TGAImage &img, TGAColor color){
 }
 // ne pas oublier que l'on peut paralleliser certains algos et pas d'autres.
 // choisir conter-clock (+) / clock (-) wise aire triangles
-std::vector<std::vector<float>> draw_full_triangle_with_texture(std::vector<std::vector<int> > vertices,std::vector<std::vector<int> > vertices_t, 
-std::vector<std::vector<float> > vn, TGAImage &img,TGAImage &texture, std::vector<std::vector<float>> z_buffer,std::vector<float> cam_vector, 
+std::vector<std::vector<float>> draw_full_triangle_with_texture(std::vector<vec3> vertices,std::vector<vec3 > vertices_t, 
+std::vector<vec3 > vn, TGAImage &img,TGAImage &texture, std::vector<std::vector<float>> z_buffer,vec3 cam_vector, 
 int width, int height ){
-    std::vector<int> A = vertices[0];
-    std::vector<int> B = vertices[1];
-    std::vector<int> C = vertices[2];
-    std::vector<int> At = vertices_t[0];
-    std::vector<int> Bt = vertices_t[1];
-    std::vector<int> Ct = vertices_t[2];
+    vec3 A = vertices[0];
+    vec3 B = vertices[1];
+    vec3 C = vertices[2];
+    vec3 At = vertices_t[0];
+    vec3 Bt = vertices_t[1];
+    vec3 Ct = vertices_t[2];
     int xmax = std::max(std::max(vertices[0][0],vertices[1][0]),vertices[2][0]);
     int ymax = std::max(std::max(vertices[0][1],vertices[1][1]),vertices[2][1]);
     int xmin = std::min(std::min(vertices[0][0],vertices[1][0]),vertices[2][0]);
@@ -53,7 +53,7 @@ int width, int height ){
         {
         for(int y= std::max(0,ymin); y <= std::min(ymax,height); y++)
         {
-            std::vector<float> baricentric_coord =  baricentric(A,B,C,x,y);
+            vec3 baricentric_coord =  baricentric(A,B,C,x,y);
             float z, t_x, t_y, n_x,n_y,n_z;
             z = t_x = t_y = n_x = n_y = n_z = 0;
             for (int v : {0,1,2}) {
@@ -86,7 +86,8 @@ int width, int height ){
     }
     return z_buffer;
 }
-void draw_triangles(std::vector<std::vector<int> > faces, std::vector<std::vector<int> > vertices,std::vector<std::vector<float> > vertice_normals,std::vector<std::vector<int> > t_faces, std::vector<std::vector<int> > vertices_texture, TGAImage &img, TGAImage &texture, TGAColor color, int width, int height, std::vector<float> cam_vector){
+void draw_triangles(std::vector<vec3 > faces, std::vector<vec3> vertices,std::vector<vec3> vertice_normals,std::vector<vec3> t_faces, std::vector<vec3> vertices_texture,
+ TGAImage &img, TGAImage &texture, TGAColor color, int width, int height, vec3 cam_vector){
     std::vector<std::vector<float>> z_buffer(width, std::vector<float>(height));
     for(int i = 0; i < width; i++){
         for(int j = 0; j < height; j++){
@@ -102,10 +103,10 @@ void draw_triangles(std::vector<std::vector<int> > faces, std::vector<std::vecto
     }
 }
 
-std::vector<std::vector<int>> resize(std::vector<std::vector<float>> mat,  int width, int height){
-    std::vector<std::vector<int>> new_mat;
+std::vector<vec3> resize(std::vector<vec3> mat,  int width, int height){
+    std::vector<vec3> new_mat;
     for (int ligne = 0; ligne < mat.size(); ligne++){
-        std::vector<int> v = {int((mat[ligne][0]*width/2)+width/2),int((mat[ligne][1]*height/2)+height/2),int((mat[ligne][2]*height/2)+height/2)};
+        vec3 v = {int((mat[ligne][0]*width/2)+width/2),int((mat[ligne][1]*height/2)+height/2),int((mat[ligne][2]*height/2)+height/2)};
         new_mat.push_back(v);
     }
     return new_mat;
