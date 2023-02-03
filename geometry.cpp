@@ -26,7 +26,7 @@ vec3 normal_vect(vec3 A, vec3 B, vec3 C){
 
 std::vector<vec3> retro_projection(float c,std::vector<vec3> list_of_coords){
     std::vector<vec3> list_coords_process;
-    for (int ligne = 0; ligne < list_of_coords.size();ligne++){
+    for (long unsigned int ligne = 0; ligne < list_of_coords.size();ligne++){
         vec3 v ;
         for (int coords_indice = 0; coords_indice < 3;coords_indice++){
             if (((list_of_coords[ligne][2])/c) != 1 ){
@@ -43,7 +43,7 @@ std::vector<vec3> transpose(std::vector<vec3> mat){
     std::vector<vec3> new_mat;
     for (int colone = 0; colone < 3;colone++){
         vec3 v ;
-        for (int ligne = 0; ligne < mat.size();ligne++){
+        for (long unsigned int ligne = 0; ligne < mat.size();ligne++){
             v[colone] = (mat[ligne][colone]);
         }
         new_mat.push_back(v);
@@ -54,7 +54,7 @@ std::vector<vec3> transpose(std::vector<vec3> mat){
 void dist(std::vector<vec3> mat, std::vector<vec3> mat2){
     int err;
     for (int colone = 0; colone < 3 ;colone++){
-        for (int ligne = 0; ligne < mat.size();ligne++){
+        for (long unsigned int ligne = 0; ligne < mat.size();ligne++){
             err += std::abs(mat[ligne][colone]-mat2[ligne][colone]);
         }
     }

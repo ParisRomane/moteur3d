@@ -7,8 +7,7 @@
 #include "display.h"
 // f -> triangles, premier sommet c'est 1 pas 0, il faut décrementer.
 
-const TGAColor white = TGAColor(255, 255, 255, 255);
-const TGAColor red   = TGAColor(255, 0,   0,   255);
+
 const int depth = 512;
 mat<3,3> ModelView;
 //for the output.
@@ -29,9 +28,9 @@ int main(int argc, char** argv) {
     constexpr int t_height = 1023;
     // arg input.
     if (argc == 5){
-        /* path_struct = argv[1];
+        path_struct = argv[1];
          path_texture = argv[2];
-         eye = argv[3];
+        /* eye = argv[3];
          center = argv[4];*/
     }else {
         std::cout << " le nombre d'arguments rentrée est insufisant : " << argc<<"\n Arguments par défaut pris. \n";
@@ -48,26 +47,26 @@ int main(int argc, char** argv) {
     while ( file >> type ){
 
         if( type == "v"){
-            float x, y, z;
+            double x, y, z;
             file >> x >> y >> z ;
             vec3 v = {x,y,z};
             vertices.push_back(v);
         }
                 
         if( type == "vt"){
-            float x, y, z;
+            double x, y, z;
             file >> x >> y >> z ;
             vec3 v = {std::round(x*t_width),std::round(y*t_height),std::round(z*t_height)};
             vertices_texture.push_back(v);
         }
         if( type == "vn"){
-            float x, y, z;
+            double x, y, z;
             file >> x >> y >> z ;
             vec3 v = {x,y,z};
             vertice_normals.push_back(v);
         }
         if( type == "f"){   
-            int x, y, z, tx ,ty, tz;
+            double x, y, z, tx ,ty, tz;
             std::string coord;
             file >>  coord;
             x = std::stoi(coord.substr(0,coord.find("/")));
@@ -101,7 +100,7 @@ int main(int argc, char** argv) {
     texture.flip_vertically();
     // creating the image
     TGAImage framebuffer(width, height, TGAImage::RGB);
-    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, red, width, height, light_vector);
+    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, width, height, light_vector);
 
     framebuffer.write_tga_file("output.tga");
     return 0;

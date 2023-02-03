@@ -87,14 +87,14 @@ int width, int height ){
     return z_buffer;
 }
 void draw_triangles(std::vector<vec3 > faces, std::vector<vec3> vertices,std::vector<vec3> vertice_normals,std::vector<vec3> t_faces, std::vector<vec3> vertices_texture,
- TGAImage &img, TGAImage &texture, TGAColor color, int width, int height, vec3 cam_vector){
+ TGAImage &img, TGAImage &texture, int width, int height, vec3 cam_vector){
     std::vector<std::vector<float>> z_buffer(width, std::vector<float>(height));
     for(int i = 0; i < width; i++){
         for(int j = 0; j < height; j++){
             z_buffer[i][j] = -std::numeric_limits<float>::infinity();
         }
     }
-    for (int i = 0; i < faces.size(); i++)
+    for (long unsigned int i = 0; i < faces.size(); i++)
     {
         z_buffer = draw_full_triangle_with_texture({vertices[faces[i][0]],vertices[faces[i][1]],vertices[faces[i][2]]},
         {vertices_texture[t_faces[i][0]],vertices_texture[t_faces[i][1]],vertices_texture[t_faces[i][2]]}, 
@@ -105,8 +105,8 @@ void draw_triangles(std::vector<vec3 > faces, std::vector<vec3> vertices,std::ve
 
 std::vector<vec3> resize(std::vector<vec3> mat,  int width, int height){
     std::vector<vec3> new_mat;
-    for (int ligne = 0; ligne < mat.size(); ligne++){
-        vec3 v = {int((mat[ligne][0]*width/2)+width/2),int((mat[ligne][1]*height/2)+height/2),int((mat[ligne][2]*height/2)+height/2)};
+    for (long unsigned int ligne = 0; ligne < mat.size(); ligne++){
+        vec3 v = {std::round((mat[ligne][0]*width/2)+width/2),std::round((mat[ligne][1]*height/2)+height/2),std::round((mat[ligne][2]*height/2)+height/2)};
         new_mat.push_back(v);
     }
     return new_mat;

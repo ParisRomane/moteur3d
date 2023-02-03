@@ -4,6 +4,7 @@
 #include <cassert>
 #include <ostream>
 
+
 template<int n> struct vec {
     double data[n] = {0};
     double& operator[](const int i)       { assert(i>=0 && i<n); return data[i]; }
@@ -117,33 +118,6 @@ template<int nrows,int ncols> struct mat {
 
     double det() const {
         return dt<ncols>::det(*this);
-    }
-
-    mat<nrows-1,ncols-1> get_minor(const int row, const int col) const {
-        mat<nrows-1,ncols-1> ret;
-        for (int i=nrows-1; i--; )
-            for (int j=ncols-1;j--; ret[i][j]=rows[i<row?i:i+1][j<col?j:j+1]);
-        return ret;
-    }
-
-    double cofactor(const int row, const int col) const {
-        return get_minor(row,col).det()*((row+col)%2 ? -1 : 1);
-    }
-
-    mat<nrows,ncols> adjugate() const {
-        mat<nrows,ncols> ret;
-        for (int i=nrows; i--; )
-            for (int j=ncols; j--; ret[i][j]=cofactor(i,j));
-        return ret;
-    }
-
-    mat<nrows,ncols> invert_transpose() const {
-        mat<nrows,ncols> ret = adjugate();
-        return ret/(ret[0]*rows[0]);
-    }
-
-    mat<nrows,ncols> invert() const {
-        return invert_transpose().transpose();
     }
 
     mat<ncols,nrows> transpose() const {
