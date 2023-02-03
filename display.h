@@ -3,7 +3,6 @@
 #include <math.h>
 #include "geometry.h"
 
-
 void line(int x0, int y0, int x1, int y1, TGAImage &img, TGAColor color){
     bool steep = false;
     if (std::abs(x1-x0) < std::abs(y1-y0)){
@@ -49,8 +48,8 @@ int width, int height ){
     int ymax = std::max(std::max(vertices[0][1],vertices[1][1]),vertices[2][1]);
     int xmin = std::min(std::min(vertices[0][0],vertices[1][0]),vertices[2][0]);
     int ymin = std::min(std::min(vertices[0][1],vertices[1][1]),vertices[2][1]);
-    for(int x = std::max(0,xmin); x <= std::min(xmax,width); x++)
-    {
+        for(int x = std::max(0,xmin); x <= std::min(xmax,width); x++)
+        {
         for(int y= std::max(0,ymin); y <= std::min(ymax,height); y++)
         {
             std::vector<float> baricentric_coord =  baricentric(A,B,C,x,y);
@@ -66,15 +65,17 @@ int width, int height ){
             }
             int tx = int(t_x);
             int ty = int(t_y);
-            float normal = normal_v[0] * cam_vector[0] + normal_v[1] * cam_vector[1] + normal_v[2] * cam_vector[2];
-
-            if (normal>0 && baricentric_coord[0] >= 0 && baricentric_coord[1] >= 0 && baricentric_coord[2] >= 0)
+            float normal = n_x * cam_vector[0] + n_y * cam_vector[1] + n_z * cam_vector[2];
+            //std::cout << normal << " " << std::sqrt(n_x*n_x + n_y*n_y + n_z*n_z) <<" \n"; //c'est moyen normal.... quelques écart par rapport à 1...
+            if (baricentric_coord[0] >= 0 && baricentric_coord[1] >= 0 && baricentric_coord[2] >= 0 && normal > 0 )
             {
                 if(z_buffer[x][y] < z){
                     z_buffer[x][y]  = z;
-                    TGAColor color = TGAColor(std::max(int(texture.get(tx,ty)[2] *normal), 0),
-                    std::max(int(texture.get(tx,ty)[1] *normal),0),
-                    std::max(int(texture.get(tx,ty)[0]*normal),0));
+                    //TGAColor color = TGAColor(std::max(int(texture.get(tx,ty)[2] *normal), 0),
+                    //std::max(int(texture.get(tx,ty)[1] *normal),0),
+                    //std::max(int(texture.get(tx,ty)[0]*normal),0));
+
+                    TGAColor color = TGAColor(int(200*normal),int(200*normal),int(200*normal));
                     //img.set(x,y,texture.get(tx,ty));
                     
                     img.set(x,y,color);
