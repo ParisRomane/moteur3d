@@ -9,17 +9,35 @@
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
+const int depth = 512;
+mat<3,3> ModelView;
+//for the output.
+constexpr int width = 512 ;
+constexpr int height = 512 ;
+// to be displayed
+vec3 eye = vec3({0,0,1});
+vec3 center = vec3({1,1,1});
+std::string path_struct = "tinyrenderer/obj/african_head/african_head.obj";
+std::string path_texture = "tinyrenderer/obj/african_head/african_head_diffuse.tga";
 
 
 //int argc, char** argv
-int main() {
+int main(int argc, char** argv) {
+    /// arg1 : path_struct, arg2 : path_texture, arg3 : eye, arg4 : center -> canvas dimension ?
     // dimensions
-    constexpr int width = 512 ;
-    constexpr int height = 512 ;
     constexpr int t_width = 1023;
     constexpr int t_height = 1023;
+    // arg input.
+    if (argc == 5){
+        /* path_struct = argv[1];
+         path_texture = argv[2];
+         eye = argv[3];
+         center = argv[4];*/
+    }else {
+        std::cout << " le nombre d'arguments rentrée est insufisant : " << argc<<"\n Arguments par défaut pris. \n";
+    }
     //file to process
-    std::ifstream file("tinyrenderer/obj/african_head/african_head.obj");
+    std::ifstream file(path_struct);
     std::string myText; 
     std::vector<std::vector<float> > vertices;
     std::vector<std::vector<int> > vertices_texture;
@@ -73,17 +91,18 @@ int main() {
     //END file process
 
     // Compute perspective
-    std::vector<float> cam_vector = {0,0,2};
+    std::vector<float> cam_vector = {0,2,2};
     std::vector<std::vector<float> > computed_vertices = compute_perspective(vertices,cam_vector);
     std::vector<std::vector<int>> new_vertices =resize(computed_vertices, width, height);
-    cam_vector = {0,0,1.};
+    std::vector<float> light_vector = {0,0,1};
+    //load texture.
+    TGAImage texture(1,1,TGAImage::RGB);
+    texture.read_tga_file(path_texture);
+    texture.flip_vertically();
     // creating the image
     TGAImage framebuffer(width, height, TGAImage::RGB);
-    TGAImage texture(1,1,TGAImage::RGB);
-    texture.read_tga_file("tinyrenderer/obj/african_head/african_head_diffuse.tga");
-    texture.flip_vertically();
-    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, red, width, height, cam_vector);
-    //framebuffer.set(10,10, red);
+    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, red, width, height, light_vector);
+
     framebuffer.write_tga_file("output.tga");
     return 0;
 }
