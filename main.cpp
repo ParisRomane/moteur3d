@@ -7,17 +7,15 @@
 #include "display.h"
 // f -> triangles, premier sommet c'est 1 pas 0, il faut décrementer.
 
-const TGAColor white = TGAColor(255, 255, 255, 255);
-const TGAColor red   = TGAColor(255, 0,   0,   255);
 
+// dimensions
+constexpr int width = 512 ;
+constexpr int height = 512 ;
+constexpr int t_width = 1023;
+constexpr int t_height = 1023;
 
 //int argc, char** argv
 int main() {
-    // dimensions
-    constexpr int width = 512 ;
-    constexpr int height = 512 ;
-    constexpr int t_width = 1023;
-    constexpr int t_height = 1023;
     //file to process
     std::ifstream file("tinyrenderer/obj/african_head/african_head.obj");
     std::string myText; 
@@ -82,7 +80,7 @@ int main() {
     TGAImage texture(1,1,TGAImage::RGB);
     texture.read_tga_file("tinyrenderer/obj/african_head/african_head_diffuse.tga");
     texture.flip_vertically();
-    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, red, width, height, cam_vector);
+    draw_triangles(faces, new_vertices, vertice_normals, t_faces, vertices_texture, framebuffer, texture, width, height, cam_vector);
     //framebuffer.set(10,10, red);
     framebuffer.write_tga_file("output.tga");
     return 0;
