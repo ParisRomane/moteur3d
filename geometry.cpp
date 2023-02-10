@@ -23,20 +23,6 @@ vec3 normal_vect(vec3 A, vec3 B, vec3 C){
     return vect ;
 }
 
-std::vector<vec3> retro_projection(float c,std::vector<vec3> list_of_coords){
-    std::vector<vec3> list_coords_process;
-    for (long unsigned int ligne = 0; ligne < list_of_coords.size();ligne++){
-        vec3 v ;
-        for (int coords_indice = 0; coords_indice < 3;coords_indice++){
-            if (((list_of_coords[ligne][2])/c) != 1 ){
-                v[coords_indice] = (list_of_coords[ligne][coords_indice]/(1-(list_of_coords[ligne][2]/c) ));
-            }else{v[coords_indice] = (list_of_coords[ligne][coords_indice]);std::cout<<"here \n";}
-        }
-        list_coords_process.push_back(v);
-    }
-    return list_coords_process;
-}
-
 
 std::vector<vec3> transpose(std::vector<vec3> mat){
     std::vector<vec3> new_mat;
@@ -59,10 +45,45 @@ void dist(std::vector<vec3> mat, std::vector<vec3> mat2){
     }
     std::cout<< err <<" \n";
 }
-std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 cam_vector){
 
-    //TO BE :
-    //std::vector<vec3> new_vertices =  Vec3f(ViewPort*Projection*ModelView*Matrix(v)); <- v in vertices
-    std::vector<vec3> new_vertices = retro_projection(cam_vector[2],vertices);
+vec3 ModelView (vec3 point,vec3 eye, vec3 center, vec3 up){
+    vec3 z = (eye-center).normalized();
+    vec3 x = cross(up,z).normalized();
+    vec3 y = cross(z,x).normalized();
+    mat<3,3> Minv ; Minv = Minv.identity();
+    for (int i=0; i<3; i++) {
+        Minv[0][i] = x[i];
+        Minv[1][i] = y[i];
+        Minv[2][i] = z[i];
+    }
+    return Minv*(point-eye);
+}
+mat<4,4> viewport(int x, int y, int w, int h) {
+    mat<4,4> m = mat<4,4>::identity();
+    m[0][3] = x+w/2.f;
+    m[1][3] = y+h/2.f;
+    m[2][3] = 255/1.f;
+
+    m[0][0] = w/1.f;
+    m[1][1] = h/1.f;
+    m[2][2] = 255/1.f;
+    return m;
+}
+
+std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 eye, vec3 center, vec3 up, int width, int height){
+    vec3 cam_vector =  (eye-center);
+    std::vector<vec3> new_vertices;
+    mat<4,4> proj = mat<4,4>::identity();
+    proj[3][2] = -1/cam_vector[2];
+    for (long unsigned int i = 0 ; i < vertices.size(); i++){
+        vec3 aux = ModelView(vertices[i],eye,center,up);
+        vec4 aux2 = {aux[0],aux[1],aux[2],1};
+        mat<4,4> view = viewport(aux[0],aux[1],width, height);
+        aux2 = proj*aux2;
+        aux2 = {aux2[0]/aux2[3],aux2[1]/aux2[3],aux2[2]/aux2[3],1};
+        aux2 = view*aux2;
+        aux = {aux2[0]/aux2[3],aux2[1]/aux2[3],aux2[2]/aux2[3]};
+        new_vertices.push_back(aux);
+    }
     return new_vertices;
 }
