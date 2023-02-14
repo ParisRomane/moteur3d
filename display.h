@@ -64,16 +64,16 @@ int width, int height, vec3 cam ){
             vec3 sn = {shadder_normal[0] , shadder_normal[1] , 2*(shadder_normal[2]-128) };
             sn = sn.normalized();
             float diffuse = sn*light_vector;
-            vec3 reflexion = ( 2 *sn*(sn*light_vector) - light_vector).normalized();
-            float specular = (reflexion * cam)*(reflexion * cam)*(reflexion * cam);
+            vec3 reflexion = ( 2 *sn*(sn*(1*light_vector)) - light_vector).normalized();
+            float specular = std::pow(std::max(reflexion[2], 0.0),7);
             //std::cout << normal << " " << std::sqrt(n_x*n_x + n_y*n_y + n_z*n_z) <<" \n"; //c'est moyen normal.... quelques écart par rapport à 1...
             if (baricentric_coord[0] >= 0 && baricentric_coord[1] >= 0 && baricentric_coord[2] >= 0 && diffuse > 0 )
             {
                 if(z_buffer[x][y] < z){
                     z_buffer[x][y]  = z;
-                    TGAColor color = TGAColor(std::min(int(255 *(specular)), 255),
-                    std::min(int(255 *(specular)),255),
-                    std::min(int(255*(specular)),255));
+                    TGAColor color = TGAColor(std::min(int(255 *specular + texture.get(tx,ty)[2] *(diffuse)), 255),
+                    std::min(int(255 *specular+texture.get(tx,ty)[1] *(diffuse)),255),
+                    std::min(int(255 *specular+texture.get(tx,ty)[0] *(diffuse)),255));
                     //img.set(x,y,texture.get(tx,ty));
 
                     //TGAColor color = TGAColor(int(200*diffuse),int(200*diffuse),int(200*diffuse));
