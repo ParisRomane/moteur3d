@@ -17,9 +17,9 @@ int height = 800 ;
 vec3 eye = vec3({1,1,3});
 vec3 center = vec3({0,0,0});
 vec3 up = {0,1,0};
-std::string path_struct = "african_head/african_head.obj";
-std::string path_texture = "african_head/african_head_diffuse.tga";
-std::string path_shadder = "african_head/african_head_nm.tga";
+std::string path_struct = "diablo3_pose/diablo3_pose.obj";
+std::string path_texture = "diablo3_pose/diablo3_pose_diffuse.tga";
+std::string path_shadder = "diablo3_pose/diablo3_pose_nm.tga";
 
 //int argc, char** argv
 int main(int argc, char** argv) {
@@ -89,11 +89,26 @@ int main(int argc, char** argv) {
     }
     file.close();
     //END FILE PROSSESSING
+    TGAImage framebuffer(width, height, TGAImage::RGB);
+    //load background.
+    TGAImage bg(1,1,TGAImage::RGB);
+    bg.read_tga_file("envmap.tga");
+    bg.flip_vertically();
+    //DRAW BACKGROUND 
+    /*for (int i =0; i < width; i++){
+        for(int j=0; j < height; j++){
+
+            int phi = ((std::atan2(j,i) / M_PI) + 1) / 2 * bg.width();
+            int theta = (std::acos(depth) / M_PI) * bg.height();
+
+            framebuffer.set(i,j,bg.get(phi,theta));
+        }
+    }*/
     // Compute perspective
     mat<4,4> mat;
     std::vector<vec3 > new_vertices = compute_perspective(vertices,eye,center,up,width,height, &mat);
     vec3 light_vector = {1,0,1}; light_vector = light_vector.normalized();
-    std::vector<vec3 > shadow_vertices = compute_perspective(vertices,light_vector,center,up,width/2,height/2, &mat);
+    std::vector<vec3 > shadow_vertices = compute_perspective(vertices,light_vector,center,up,width,height, &mat);
     // load shadder 
     TGAImage shadder(1,1,TGAImage::RGB);
     shadder.read_tga_file(path_shadder);
@@ -103,8 +118,7 @@ int main(int argc, char** argv) {
     texture.read_tga_file(path_texture);
     texture.flip_vertically();
     // creating the image
-    TGAImage framebuffer(width, height, TGAImage::RGB);
-    draw_triangles(faces, new_vertices, shadder, t_faces, vertices_texture, framebuffer, texture, width, height, light_vector, center-eye, shadow_vertices, mat);
+    draw_triangles(faces, new_vertices, shadder, t_faces, vertices_texture, framebuffer, texture, width, height, light_vector, center-eye, shadow_vertices);
 
     framebuffer.write_tga_file("output.tga");
     return 0;
