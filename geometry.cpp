@@ -46,17 +46,19 @@ void dist(std::vector<vec3> mat, std::vector<vec3> mat2){
     std::cout<< err <<" \n";
 }
 
-vec3 ModelView (vec3 point,vec3 eye, vec3 center, vec3 up){
+mat<4,4> ModelView (vec3 eye, vec3 center, vec3 up){
     vec3 z = (eye-center).normalized();
     vec3 x = cross(up,z).normalized();
     vec3 y = cross(z,x).normalized();
-    mat<3,3> Minv ; Minv = Minv.identity();
+    mat<4,4> Minv ; Minv = Minv.identity();
+    mat<4,4> Tr   = mat<4,4>::identity();
     for (int i=0; i<3; i++) {
         Minv[0][i] = x[i];
         Minv[1][i] = y[i];
         Minv[2][i] = z[i];
+        Tr[i][3] = -eye[i];
     }
-    return Minv*(point-eye);
+    return Minv * Tr;
 }
 mat<4,4> viewport(int x, int y, int w, int h) {
     mat<4,4> m = mat<4,4>::identity();
@@ -70,20 +72,21 @@ mat<4,4> viewport(int x, int y, int w, int h) {
     return m;
 }
 
-std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 eye, vec3 center, vec3 up, int width, int height){
+std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 eye, vec3 center, vec3 up, int width, int height,mat<4,4> *M){
     vec3 cam_vector =  (eye-center);
     std::vector<vec3> new_vertices;
     mat<4,4> proj = mat<4,4>::identity();
     proj[3][2] = -1/cam_vector[2];
+    mat<4,4> view = viewport(center[0],center[1],width, height);
+    mat<4,4> model = ModelView(eye,center,up);
     for (long unsigned int i = 0 ; i < vertices.size(); i++){
-        vec3 aux = ModelView(vertices[i],eye,center,up);
-        vec4 aux2 = {aux[0],aux[1],aux[2],1};
-        mat<4,4> view = viewport(aux[0],aux[1],width, height);
-        aux2 = proj*aux2;
+        vec4 aux2 = {vertices[i][0],vertices[i][1],vertices[i][2],1};
+        aux2 = proj*model*aux2;
         aux2 = {aux2[0]/aux2[3],aux2[1]/aux2[3],aux2[2]/aux2[3],1};
         aux2 = view*aux2;
-        aux = {aux2[0]/aux2[3],aux2[1]/aux2[3],aux2[2]/aux2[3]};
+        vec3 aux = {aux2[0]/aux2[3],aux2[1]/aux2[3],aux2[2]/aux2[3]};
         new_vertices.push_back(aux);
     }
+    (*M) = view*proj*model;
     return new_vertices;
 }

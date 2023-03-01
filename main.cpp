@@ -17,9 +17,9 @@ int height = 800 ;
 vec3 eye = vec3({1,1,3});
 vec3 center = vec3({0,0,0});
 vec3 up = {0,1,0};
-std::string path_struct = "tinyrenderer/obj/african_head/african_head.obj";
-std::string path_texture = "tinyrenderer/obj/african_head/african_head_diffuse.tga";
-std::string path_shadder = "tinyrenderer/obj/african_head/african_head_nm.tga";
+std::string path_struct = "african_head/african_head.obj";
+std::string path_texture = "african_head/african_head_diffuse.tga";
+std::string path_shadder = "african_head/african_head_nm.tga";
 
 //int argc, char** argv
 int main(int argc, char** argv) {
@@ -90,8 +90,10 @@ int main(int argc, char** argv) {
     file.close();
     //END FILE PROSSESSING
     // Compute perspective
-    std::vector<vec3 > new_vertices = compute_perspective(vertices,eye,center,up,width,height);
+    mat<4,4> mat;
+    std::vector<vec3 > new_vertices = compute_perspective(vertices,eye,center,up,width,height, &mat);
     vec3 light_vector = {1,0,1}; light_vector = light_vector.normalized();
+    std::vector<vec3 > shadow_vertices = compute_perspective(vertices,light_vector,center,up,width/2,height/2, &mat);
     // load shadder 
     TGAImage shadder(1,1,TGAImage::RGB);
     shadder.read_tga_file(path_shadder);
@@ -102,7 +104,7 @@ int main(int argc, char** argv) {
     texture.flip_vertically();
     // creating the image
     TGAImage framebuffer(width, height, TGAImage::RGB);
-    draw_triangles(faces, new_vertices, shadder, t_faces, vertices_texture, framebuffer, texture, width, height, light_vector, center-eye);
+    draw_triangles(faces, new_vertices, shadder, t_faces, vertices_texture, framebuffer, texture, width, height, light_vector, center-eye, shadow_vertices, mat);
 
     framebuffer.write_tga_file("output.tga");
     return 0;

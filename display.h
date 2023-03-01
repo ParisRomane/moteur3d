@@ -36,9 +36,9 @@ void line(int x0, int y0, int x1, int y1, TGAImage &img, TGAColor color){
 }
 // ne pas oublier que l'on peut paralleliser certains algos et pas d'autres.
 // choisir conter-clock (+) / clock (-) wise aire triangles
-std::vector<std::vector<float>> draw_full_triangle_with_texture(std::vector<vec3> vertices,std::vector<vec3 > vertices_t, 
+std::vector<std::vector<float>> draw_full_triangle_with_texture(std::vector<vec3> vertices, std::vector<vec3> shadow_vertices,std::vector<vec3 > vertices_t, 
 TGAImage &shadder_normals, TGAImage &img,TGAImage &texture, std::vector<std::vector<float>> z_buffer,vec3 light_vector, 
-int width, int height, vec3 cam ){
+int width, int height, vec3 cam,std::vector<std::vector<float>> shadow_buffer ,mat<4,4> M){
     vec3 A = vertices[0];
     vec3 B = vertices[1];
     vec3 C = vertices[2];
@@ -66,14 +66,14 @@ int width, int height, vec3 cam ){
             float diffuse = sn*light_vector;
             vec3 reflexion = ( 2 *sn*(sn*(1*light_vector)) - light_vector).normalized();
             float specular = std::pow(std::max(reflexion[2], 0.0),7);
-            //std::cout << normal << " " << std::sqrt(n_x*n_x + n_y*n_y + n_z*n_z) <<" \n"; //c'est moyen normal.... quelques écart par rapport à 1...
+            
             if (baricentric_coord[0] >= 0 && baricentric_coord[1] >= 0 && baricentric_coord[2] >= 0 && diffuse > 0 )
             {
                 if(z_buffer[x][y] < z){
                     z_buffer[x][y]  = z;
-                    TGAColor color = TGAColor(std::min(int(255 *specular + texture.get(tx,ty)[2] *(diffuse)), 255),
-                    std::min(int(255 *specular+texture.get(tx,ty)[1] *(diffuse)),255),
-                    std::min(int(255 *specular+texture.get(tx,ty)[0] *(diffuse)),255));
+                    TGAColor color = TGAColor(std::min(int((255 *specular + texture.get(tx,ty)[2] *(diffuse))), 255),
+                    std::min(int((255 *specular+texture.get(tx,ty)[1] *(diffuse))),255),
+                    std::min(int((255 *specular+texture.get(tx,ty)[0] *(diffuse))),255));
                     //img.set(x,y,texture.get(tx,ty));
 
                     //TGAColor color = TGAColor(int(200*diffuse),int(200*diffuse),int(200*diffuse));
@@ -84,19 +84,24 @@ int width, int height, vec3 cam ){
     }
     return z_buffer;
 }
+
+
 void draw_triangles(std::vector<vec3 > faces, std::vector<vec3> vertices,TGAImage &shadder_normals,std::vector<vec3> t_faces, std::vector<vec3> vertices_texture,
- TGAImage &img, TGAImage &texture, int width, int height, vec3 light_vector,vec3 cam){
+ TGAImage &img, TGAImage &texture, int width, int height, vec3 light_vector,vec3 cam, std::vector<vec3> shadow_vertices,mat<4,4> M){
+    std::vector<std::vector<float>> shadow_buffer(width, std::vector<float>(height));
     std::vector<std::vector<float>> z_buffer(width, std::vector<float>(height));
-    for(int i = 0; i < width; i++){
+    for(float i = 0; i < width; i++){
         for(int j = 0; j < height; j++){
             z_buffer[i][j] = -std::numeric_limits<float>::infinity();
+            shadow_buffer[i][j] = -std::numeric_limits<float>::infinity();
         }
     }
+
     for (long unsigned int i = 0; i < faces.size(); i++)
     {
         z_buffer = draw_full_triangle_with_texture({vertices[faces[i][0]],vertices[faces[i][1]],vertices[faces[i][2]]},
+        {shadow_vertices[faces[i][0]],shadow_vertices[faces[i][1]],shadow_vertices[faces[i][2]]},
         {vertices_texture[t_faces[i][0]],vertices_texture[t_faces[i][1]],vertices_texture[t_faces[i][2]]}, 
-        shadder_normals, 
-         img, texture, z_buffer, light_vector,width,height,cam.normalized());
+        shadder_normals, img, texture, z_buffer, light_vector,width,height,cam.normalized(),shadow_buffer,M);
     }
 }

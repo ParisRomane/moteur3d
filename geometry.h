@@ -14,6 +14,6 @@ void dist(std::vector<vec3> mat, std::vector<vec3> mat2);
 
 mat<4,4> viewport(int x, int y, int w, int h);
 
-std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 eye, vec3 center, vec3 up, int width, int height);
+std::vector<vec3> compute_perspective( std::vector<vec3>vertices, vec3 eye, vec3 center, vec3 up, int width, int height, mat<4,4> *M);
 
 vec3 ModelView (vec3 point,vec3 eye, vec3 center, vec3 up);
